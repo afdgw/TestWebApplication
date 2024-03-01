@@ -16,10 +16,11 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => 
-    options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        b => b.MigrationsAssembly("WebApplication2")));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options
+        .UseLazyLoadingProxies()
+        .UseNpgsql(
+            builder.Configuration.GetConnectionString("DefaultConnection"),
+            b => b.MigrationsAssembly("WebApplication2")));
 
 builder.Services.AddScoped<ITreeNodeService, TreeNodeService>();
 

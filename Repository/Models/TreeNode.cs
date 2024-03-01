@@ -6,7 +6,7 @@ public class TreeNode
     public string Name { get; set; }
 
     public int? ParentId { get; set; }
-    public TreeNode Parent { get; set; }
+    public virtual TreeNode Parent { get; set; }
 
-    public List<TreeNode> Children { get; set; }
+    public virtual List<TreeNode> Children { get; set; }
 }

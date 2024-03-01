@@ -15,7 +15,9 @@ internal class TreeNodeService : ITreeNodeService
         _dbContext = dbContext;
     }
 
-    public List<TreeNode> GetAll() => _dbContext.TreeNodes.Where(tn => !tn.ParentId.HasValue).ToList();
+    public List<TreeNode> GetAll() => _dbContext.TreeNodes
+        .Where(tn => !tn.ParentId.HasValue)
+        .ToList();
 
     public async Task<TreeNode?> Create(int? rootId, string name)
     {
