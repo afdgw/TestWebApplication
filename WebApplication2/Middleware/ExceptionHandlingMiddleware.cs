@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Repository;
 using Repository.Models;
 using System.Collections.Generic;
+using System.Text;
 using WebApplication2.Exceptions;
 
 namespace WebApplication2.Middleware;
@@ -28,8 +29,7 @@ public class ExceptionHandlingMiddleware
         }
         catch (Exception exception)
         {
-            using StreamReader reader = new(context.Request.Body);
-            var bodyAsString = await reader.ReadToEndAsync();
+            string bodyAsString = await GetBody(context);
 
             var exceptionRecord = dbContext.ExceptionRecords.Add(new ExceptionRecord
             {
@@ -47,13 +47,25 @@ public class ExceptionHandlingMiddleware
             await context.Response.WriteAsJsonAsync(new
             {
                 Id = exceptionRecord.Entity.Id,
-                Type = exception is SecurityException ? "Security" :"Exception",
-                Data = new 
-                    { Message = exception is SecurityException
+                Type = exception is SecurityException ? "Security" : "Exception",
+                Data = new
+                {
+                    Message = exception is SecurityException
                         ? exception.Message
                         : $"Internal server error ID = {exceptionRecord.Entity.Id}"
-                    }
+                }
             });
         }
+    }
+
+    private static async Task<string> GetBody(HttpContext context)
+    {
+        context.Request.Body.Seek(0, SeekOrigin.Begin);
+        using var reader = new StreamReader(context.Request.Body);
+        var body = await reader.ReadToEndAsync();
+
+        context.Request.Body.Seek(0, SeekOrigin.Begin);
+
+        return body;
     }
 }
